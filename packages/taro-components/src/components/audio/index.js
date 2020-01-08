@@ -1,3 +1,4 @@
+import 'weui'
 import Nerv from 'nervjs'
 import './style/index.scss'
 
@@ -18,7 +19,7 @@ class Audio extends Nerv.Component {
           currentTime: e.srcElement.currentTime
         }
       })
-      this.props.onTimeupdate && this.props.onTimeupdate(e)
+      this.props.onTimeUpdate && this.props.onTimeUpdate(e)
     })
 
     this.audio.addEventListener('ended', (e) => {
@@ -51,7 +52,8 @@ class Audio extends Nerv.Component {
       initialTime,
       id,
       loop,
-      muted
+      muted,
+      className
     } = this.props
     return (
       <audio
@@ -62,6 +64,7 @@ class Audio extends Nerv.Component {
         start={initialTime}
         loop={loop}
         muted={muted}
+        className={className}
         ref={(audio) => { this.audio = audio }}>
         暂时不支持播放该视频
       </audio>

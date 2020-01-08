@@ -2,23 +2,31 @@
 
 Alo, alo! Bilibilibilibibili~
 
-> IOS: Remember to link the libART.a into your project if you want to use Icon.
-
-## Capture
-
-![image](screenshots/capture.20180531.gif)
-
 ## Example
 
-Please use official AwesomeProject.
-
 ```bash
-# RNComponent dependencies
-npm i react-native-swiper react-dom
-# Move source to example directory
-cp -rf src AwesomeProjectDir/src/tcr
-# import components
-# import { Icon } from './tcr'
+# 启动安卓模拟器
+emulator @YOUR_AVD_NAME
+
+# 安装依赖
+yarn
+
+# 编译
+npm run dev
+
+# 在其它目录下：
+# react-native init TCRNExample --version 0.55.4
+# 把初始化的项目中的 android 和 ios 目录移到 TCRNExample 下面
+# （TCRNExample 下核心文件：example/, App.js, rn-cli.config.js）
+
+# 进入例子目录安装依赖
+cd TCRNExample
+yarn
+
+# 启动 Android
+react-native run-android
+# 启动 iOS
+react-native run-ios
 ```
 
 ## About code comments
@@ -27,46 +35,8 @@ cp -rf src AwesomeProjectDir/src/tcr
 - ✘ Not support
 - \- Would not support
 
-## Todo list
+## 未来可能的升级
 
-> FS = Fully Support
-> PS = Partially Support
-> MS = Minimum Support
+目前 react-native 版本为 0.55.4
 
-- 视图容器
-  - [x] view | MS
-  - [x] scroll-view | PS
-  - [x] swiper | PS
-- 基础内容
-  - [x] icon | FS
-  - [x] text | PS
-  - [x] rich-text | FS
-  - [x] progress | FS
-- 表单内容
-  - [x] button | PS
-  - [x] checkbox | FS
-  - [ ] form
-  - [x] input | PS
-  - [ ] label
-  - [x] picker | PS
-  - [x] radio | FS
-  - [x] slider | PS
-  - [x] switch | FS
-  - [x] textarea
-- 导航
-- 媒体组件
-  - [ ] audio
-  - [x] image | PS
-  - [ ] video
-  - [ ] camera
-- 其他
-  - [ ] tabbar
-
-## pureDependencies
-
-- react: ^16.2.0
-- react-native: ^0.54.3
-
-## D~
-
-[flow type annotation for children react elements](https://stackoverflow.com/a/42887802)
+- 0.58.x ScrollView 支持 snapToOffsets，Swiper 关注

@@ -1,6 +1,13 @@
 import traverse from 'babel-traverse'
 import * as t from 'babel-types'
 import generate from 'babel-generator'
+import template from 'babel-template'
+import * as html from 'html'
+import T from '@tarojs/taro'
+
+export function prettyPrint (str: string): string {
+  return html.prettyPrint(str, { max_char: 0 })
+}
 
 export function buildComponent (
   renderBody: string,
@@ -23,10 +30,97 @@ export default class Index extends Component {
 `
 }
 
+const internalFunction = `function isObject(arg) {
+  return arg === Object(arg) && typeof arg !== 'function';
+}
+
+function getElementById (a, b, c) {
+  if (c === 'component') {
+    return 'test-component-ref'
+  } else if (c === 'dom') {
+    return 'test-ref'
+  }
+}
+
+function handleLoopRef (component, id, type, handler) {
+  const dom = getElementById(component, id, type)
+
+  const handlerType = typeof handler
+  if (handlerType !== 'function' && handlerType !== 'object') {
+    return
+  }
+
+  if (handlerType === 'object') {
+    handler.current = dom
+  } else if (handlerType === 'function') {
+    handler(dom)
+  }
+}
+
+var Current = {
+  inst: {}
+}
+
+function genLoopCompid () {
+  return null
+}
+
+function genCompid () {
+  return ''
+}
+
+var propsManager = {
+  set (o, id) {
+    Current.inst[id || 'testProps'] = o
+  }
+};
+
+function internal_get_original(item) {
+  if (isObject(item)) {
+    return item.$original || item;
+  }
+
+  return item;
+};
+function dashify(str, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('expected a string');
+  }
+
+  return str.trim().replace(/([a-z])([A-Z])/g, '$1-$2').replace(/\W/g, function (m) {
+    return /[À-ž]/.test(m) ? m : '-';
+  }).replace(/^-+|-+$/g, '').replace(/-{2,}/g, function (m) {
+    return options && options.condense ? '-' : m;
+  }).toLowerCase();
+}
+
+function internal_inline_style(obj) {
+  if (obj == null) {
+    return '';
+  }
+
+  if (typeof obj === 'string') {
+    return obj;
+  }
+
+  if (obj === null || obj === undefined) {
+    return '';
+  }
+
+  if (!isObject(obj)) {
+    throw new TypeError('style 只能是一个对象或字符串。');
+  }
+
+  return Object.keys(obj).map(function (key) {
+    return dashify(key).concat(':').concat(obj[key]);
+  }).join(';');
+}
+`
+
 export const baseCode = `
 return (
   <View className='index'>
-    <View className='title'>{this.state.title}</View>
+    <View className='title'>title</View>
     <View className='content'>
       {this.state.list.map(item => {
         return (
@@ -39,17 +133,28 @@ return (
 )
 `
 
+export function removeShadowData (obj: any) {
+  if (obj['__data']) {
+    delete obj['__data']
+  }
+  return obj
+}
+
 export const baseOptions = {
   isRoot: false,
   isApp: false,
-  path: __dirname,
+  sourcePath: __dirname,
+  outputPath: __dirname,
+  sourcetDir: __dirname,
   code: '',
   isTyped: false
 }
 
-export function evalClass (ast: t.File, props = '') {
+export function evalClass (ast: t.File, props = '', isRequire = false) {
   let mainClass!: t.ClassDeclaration
-  const statements = new Set<t.ExpressionStatement>()
+  const statements = new Set<t.ExpressionStatement>([
+    template('Current.inst = this;')() as any
+  ])
 
   traverse(ast, {
     ClassDeclaration (path) {
@@ -80,14 +185,28 @@ export function evalClass (ast: t.File, props = '') {
     // constructor 即便没有被定义也会被加上
     if (t.isClassMethod(method) && method.kind === 'constructor') {
       const index = method.body.body.findIndex(node => t.isSuper(node))
+      method.body.body.push(
+        t.expressionStatement(t.assignmentExpression(
+          '=',
+          t.memberExpression(
+            t.thisExpression(),
+            t.identifier('state')
+          ),
+          t.callExpression(t.memberExpression(t.thisExpression(), t.identifier('_createData')), [])
+        ))
+      )
       method.body.body.splice(index, 0, ...statements)
     }
   }
 
-  const code = `function f() {};` +
+  let code = `function f() {};` +
     generate(t.classDeclaration(t.identifier('Test'), t.identifier('f'), mainClass.body, [])).code +
-    ';' + `new Test(${props})`
+    ';' + `var classInst =  new Test(${props});classInst`
+
+  code = internalFunction + code
+
   // tslint:disable-next-line
+  const Taro = T
   return eval(code)
 }
 

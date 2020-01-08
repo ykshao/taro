@@ -13,6 +13,7 @@
  * @returns
  */
 function verifyDate (date) {
+  if (!date) return false
   date = new Date(date.replace(/-/g, '/'))
   return isNaN(date.getMonth()) ? false : date
 }
@@ -32,7 +33,7 @@ function getMaxDay (year, month) {
   }
   return 31
 }
-module.exports = {
+export {
   verifyDate,
   getMaxDay
 }

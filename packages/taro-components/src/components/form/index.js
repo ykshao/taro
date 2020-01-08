@@ -1,3 +1,4 @@
+import 'weui'
 import Nerv from 'nervjs'
 
 class Form extends Nerv.Component {
@@ -21,13 +22,18 @@ class Form extends Nerv.Component {
     let formItem = {}
     let hash = {}
     elements.forEach(item => {
-      if (item.className === 'weui-switch') {
+      if (item.className.indexOf('weui-switch') !== -1) {
         formItem[item.name] = item.checked
         return
       }
       if (item.type === 'radio') {
         if (item.checked) {
-          formItem['radio-group'] = item.value
+          hash[item.name] = true
+          formItem[item.name] = item.value
+        } else {
+          if (!hash[item.name]) {
+            formItem[item.name] = ''
+          }
         }
         return
       }
@@ -39,6 +45,10 @@ class Form extends Nerv.Component {
           } else {
             hash[item.name] = true
             formItem[item.name] = [item.value]
+          }
+        } else {
+          if (!hash[item.name]) {
+            formItem[item.name] = []
           }
         }
         return
@@ -55,9 +65,13 @@ class Form extends Nerv.Component {
     textareaEleArr.forEach(v => {
       formItem[v.name] = v.value
     })
-    this.props.onSubmit({
-      detail: { value: formItem }
+    Object.defineProperty(e, 'detail', {
+      enumerable: true,
+      value: {
+        value: formItem
+      }
     })
+    this.props.onSubmit(e)
   }
 
   onReset (e) {
@@ -66,7 +80,8 @@ class Form extends Nerv.Component {
   }
 
   render () {
-    return <form onSubmit={this.onSubmit} onReset={this.onReset}>{this.props.children}</form>
+    const { className, style } = this.props
+    return <form className={className} style={style} onSubmit={this.onSubmit} onReset={this.onReset}>{this.props.children}</form>
   }
 }
 

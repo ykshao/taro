@@ -1,8 +1,16 @@
+img[src=""] {
+  opacity: 0;
+}
 .taro-img {
   display: inline-block;
   overflow: hidden;
   position: relative;
   font-size: 0;
+  width: 320px;
+  height: 240px;
+  &.taro-img__widthfix {
+    height: 100%;
+  }
   &__mode {
     &-scaletofill {
       width: 100%;
@@ -13,8 +21,18 @@
       max-height: 100%;
     }
     &-aspectfill {
-      min-width: 100%;
-      height: 100%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      &--width {
+        min-width: 100%;
+        height: 100%;
+      }
+      &--height {
+        width: 100%;
+        min-height: 100%;
+      }
     }
     &-widthfix {
       width: 100%;

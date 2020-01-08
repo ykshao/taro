@@ -1,3 +1,4 @@
+import 'weui'
 import Nerv from 'nervjs'
 
 class CheckboxGroup extends Nerv.Component {
@@ -6,6 +7,7 @@ class CheckboxGroup extends Nerv.Component {
     this.state = {
       value: []
     }
+    this.uniqueName = Date.now().toString(36)
     this.toggleChange = this.toggleChange.bind(this)
   }
 
@@ -28,11 +30,11 @@ class CheckboxGroup extends Nerv.Component {
         value: resp
       }
     })
-    onChange(e)
+    onChange && onChange(e)
   }
 
   render () {
-    const { name = '' } = this.props
+    const { name = this.uniqueName } = this.props
     // 给 children 绑定事件
     const children = Nerv.Children.toArray(this.props.children).map(
       (item, i) => {

@@ -1,8 +1,9 @@
+import 'weui'
 import Nerv from 'nervjs'
 import omit from 'omit.js'
 import classNames from 'classnames'
 
-import './index.scss'
+import './style/index.scss'
 
 class Button extends Nerv.Component {
   constructor () {

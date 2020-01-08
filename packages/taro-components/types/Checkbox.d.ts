@@ -1,42 +1,44 @@
 import { ComponentType } from 'react'
-import { StandardProps, BaseEventFunction } from './common'
+import { StandardProps, CommonEventFunction, FormItemProps } from './common'
 
-interface CheckboxGroupProps extends StandardProps {
-  
+export interface CheckboxGroupProps extends StandardProps, FormItemProps {
   /**
    * <checkbox-group/>中选中项发生改变是触发 change 事件
-   * 
+   *
    * detail = {value:[选中的checkbox的value的数组]}
    *
    */
-  onChange: BaseEventFunction
+  onChange?: CommonEventFunction
 }
 
 declare const CheckboxGroup: ComponentType<CheckboxGroupProps>
 
-interface CheckboxProps extends StandardProps {
-  
+export interface CheckboxProps extends StandardProps {
+
   /**
    * <checkbox/>标识，选中时触发<checkbox-group/>的 change 事件，并携带 <checkbox/> 的 value
    */
   value: string,
-  
+
   /**
    * 是否禁用
    */
-  disabled: boolean,
-  
+  disabled?: boolean,
+
   /**
    * 当前是否选中，可用来设置默认选中
    */
-  checked: boolean,
-  
+  checked?: boolean,
+
   /**
    * checkbox的颜色，同css的color
    */
-  color: string
+  color?: string
 }
 
+/**
+ * @classification forms
+ */
 declare const Checkbox: ComponentType<CheckboxProps>
 
 
