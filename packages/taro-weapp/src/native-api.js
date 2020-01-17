@@ -8,7 +8,7 @@ import {
 import { cacheDataSet, cacheDataGet } from './data-cache'
 import { queryToJson, getUniqueKey } from './util'
 const RequestQueue = {
-  MAX_REQUEST: 5,
+  MAX_REQUEST: 10,
   queue: [],
   pendingQueue: [],
 
@@ -22,7 +22,8 @@ const RequestQueue = {
 
     while (this.pendingQueue.length < this.MAX_REQUEST) {
       const options = this.queue.shift()
-      const { successFn, failFn } = options
+      let successFn = options.success
+      let failFn = options.fail
       options.success = (...args) => {
         this.pendingQueue = this.pendingQueue.filter(item => item !== options)
         this.run()
@@ -240,6 +241,14 @@ function wxCloud (taro) {
   taro.cloud = wxcloud
 }
 
+function wxEnvObj (taro) {
+  const wxEnv = wx.env || {}
+  const taroEnv = {}
+  const envList = ['USER_DATA_PATH']
+  envList.forEach(key => taroEnv[key] = wxEnv[key])
+  taro.env = taroEnv
+}
+
 export default function initNativeApi (taro) {
   processApis(taro)
   taro.request = link.request.bind(link)
@@ -252,4 +261,5 @@ export default function initNativeApi (taro) {
   taro.pxTransform = pxTransform.bind(taro)
   taro.canIUseWebp = canIUseWebp
   wxCloud(taro)
+  wxEnvObj(taro)
 }

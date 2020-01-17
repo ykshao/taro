@@ -21,7 +21,8 @@ const RequestQueue = {
 
     while (this.pendingQueue.length < this.MAX_REQUEST) {
       const options = this.queue.shift()
-      const { successFn, failFn } = options
+      let successFn = options.success
+      let failFn = options.fail
       options.success = (...args) => {
         this.pendingQueue = this.pendingQueue.filter(item => item !== options)
         this.run()
@@ -172,6 +173,7 @@ function pxTransform (size) {
 
 export default function initNativeApi (taro) {
   processApis(taro)
+  taro.requestPayment = taro.requestPolymerPayment
   taro.request = link.request.bind(link)
   taro.addInterceptor = link.addInterceptor.bind(link)
   taro.cleanInterceptors = link.cleanInterceptors.bind(link)
